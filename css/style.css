@@ -10,11 +10,12 @@
   flex-direction: row;
   padding: 0;
   height: 100%;
-  width:100%;
+  width: 100%;
 }
 
 #toolbar{
   height: 100%;
+  position:fixed;
   background-color: rgb(18,66,42);
 }
 
@@ -44,6 +45,7 @@
   width:100%;
   padding: 20px;
   background-color: white;
+  margin-left: 200px;
 }
 
 #customer-name{
@@ -59,9 +61,8 @@
 
 #accounts{
   background-color: rgb(244,244,244);
-  border-top: 1px solid black;
-  border-left: 1px solid black;
   border-right: 1px solid black;
+  border-left: 1px solid black;
 }
 
 .account-box{
@@ -70,6 +71,7 @@
   justify-content: space-between;
   border-left: 5px solid rgb(244,244,244);
   padding: 10px;
+  border-top: 1px solid black;
   border-bottom: 1px solid black;
 }
 
@@ -77,4 +79,9 @@
   font-weight: 700;
   background-color: #eef6eb;
   border-left: 5px solid #1ab04c;
+}
+
+.transaction-collaspe{
+  overflow-y:scroll;
+  max-height: 240px;
 }

@@ -26,7 +26,7 @@ var myInit = {
 
 var myAccount = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c/accounts', myInit);
 
-var nom = fetch(myAccount)
+fetch(myAccount)
   .then(response => response.json())
   .then(account => {
     // Chequing
@@ -42,6 +42,7 @@ var nom = fetch(myAccount)
     document.getElementById("savings-amount").innerHTML ="$" + savings;
     document.getElementById("balance-amount").innerHTML ="$" + balance;
     document.getElementById("credit-amount").innerHTML ="$" + credit;
+
 });
 
 var myPI = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c',myInit);
@@ -64,6 +65,7 @@ fetch(myTransactions)
   .then(account => {
     var credit = [];
     var chequing = [];
+
     account["result"].map(function(transaction){
     //  console.log(transaction["description"] + " " + transaction["currencyAmount"])
       if (transaction["type"] == "CreditCardTransaction"){
@@ -71,9 +73,32 @@ fetch(myTransactions)
       } else if (transaction["type"] == "DepositAccountTransaction"){
         chequing.push({"description":transaction["description"], "amount":transaction["currencyAmount"]});
       }
-    }
-  )
+    })
+
+    var creditCollaspe = credit.map(function(transaction){
+      return (
+        `<div style="display:flex;flex-direction:row;justify-content:space-between;padding:0px 20px;" className="transaction-box">
+          <div className="description">${transaction["description"]}</div>
+          <div className="amount">$${transaction["amount"]}</div>
+        </div>`
+      )
+    })
+
+    var chequingCollaspe = credit.map(function(transaction){
+      return (
+        `<div style="display:flex;flex-direction:row;justify-content:space-between;padding:0px 20px;" className="transaction-box">
+          <div className="description">${transaction["description"]}</div>
+          <div className="amount">$${transaction["amount"]}</div>
+        </div>`
+      )
+    })
+
+    document.getElementById("chequing-collaspe").innerHTML = chequingCollaspe.join("");
+    document.getElementById("credit-collaspe").innerHTML = creditCollaspe.join("");
   });
+
+
+
 
 class Account extends React.Component{
   constructor(props){
@@ -95,7 +120,9 @@ class Account extends React.Component{
                 <div>Chequing:</div>
                 <div id="chequing-amount"></div>
               </div>
-              <div id="chequing-collaspe" className="transaction-collaspe"></div>
+              <div id="chequing-collaspe" className="transaction-collaspe">
+
+              </div>
               <div id="savings" className="account-box account-hoverable">
                 <div>Savings:</div>
                 <div id="savings-amount"></div>
@@ -109,6 +136,9 @@ class Account extends React.Component{
               <div id="credit-card" className="account-box account-hoverable">
                 <div>Credit:</div>
                 <div id="credit-amount"></div>
+              </div>
+              <div id="credit-collaspe" className="transaction-collaspe">
+
               </div>
             </div>
           </div>
