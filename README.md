@@ -1,2 +1,2 @@
-# scaling-waffle
+# CoffeeSaver
 Hack the North Project
