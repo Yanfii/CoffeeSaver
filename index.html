@@ -9,25 +9,151 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
 
   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.css">
+  <link rel="styleSheet" type="text/css" href="css/style.css"
 </head>
 
 
-<div id="root"></div>
+<div id="app"></div>
 
 <script type="text/babel">
 
-class Root extends React.Component{
+var myInit = {
+  method: 'GET',
+  headers: {
+    'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDQlAiLCJ0ZWFtX2lkIjoiZjI0NzBhNTMtOGI5Ni0zYjllLTg5NmItM2Y1Y2YxMmZkMzMxIiwiZXhwIjo5MjIzMzcyMDM2ODU0Nzc1LCJhcHBfaWQiOiIwYzIzYWM2OS0wOGRkLTQzMTAtOGNkMS04YjEwNzQ2YzJhY2IifQ.UCfyelzpPiRB-kk0l8FYNDowfDOJ5RHGkZ8h849hH5k'
+  }
+};
+
+var myAccount = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c/accounts', myInit);
+
+var nom = fetch(myAccount)
+  .then(response => response.json())
+  .then(account => {
+    // Chequing
+    var chequing = account["result"]["bankAccounts"][0]["balance"];
+    // Savings
+    var savings = account["result"]["bankAccounts"][1]["balance"];
+    // Credit
+    var credit = account["result"]["creditCardAccounts"][0]["balance"];
+    // Balance
+    var balance = chequing + savings;
+    // the json variable contains the response from the API
+    document.getElementById("chequing-amount").innerHTML ="$" + chequing;
+    document.getElementById("savings-amount").innerHTML ="$" + savings;
+    document.getElementById("balance-amount").innerHTML ="$" + balance;
+    document.getElementById("credit-amount").innerHTML ="$" + credit;
+});
+
+var myPI = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c',myInit);
+
+fetch(myPI)
+  .then(response => response.json())
+  .then(account => {
+    // Name
+    var name = account["result"]["givenName"] + " " + account["result"]["surname"];
+    // customer ID
+    var customerID = account["result"]["id"];
+    document.getElementById("customer-name").innerHTML = name;
+    document.getElementById("customer-id").innerHTML ="Account ID: " + customerID;
+});
+
+var myTransactions = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c/transactions', myInit);
+
+fetch(myTransactions)
+  .then(response => response.json())
+  .then(account => {
+    var credit = [];
+    var chequing = [];
+    account["result"].map(function(transaction){
+    //  console.log(transaction["description"] + " " + transaction["currencyAmount"])
+      if (transaction["type"] == "CreditCardTransaction"){
+        credit.push({"description":transaction["description"], "amount":transaction["currencyAmount"]});
+      } else if (transaction["type"] == "DepositAccountTransaction"){
+        chequing.push({"description":transaction["description"], "amount":transaction["currencyAmount"]});
+      }
+    }
+  )
+  });
+
+class Account extends React.Component{
   constructor(props){
     super(props);
   }
 
   render(){
     return(
-      <div> Hello World! </div>
+      <div id="customer">
+        <div id="customer-info">
+          <div id="customer-header">
+            <div id="customer-name" className="customer-box"/>
+            <div id="customer-id" className="customer-box"/>
+          </div>
+          <div id="accounts-title"><b>Accounts:</b></div>
+          <div id="accounts">
+            <div id="banking">
+              <div id="chequing" className="account-box account-hoverable">
+                <div>Chequing:</div>
+                <div id="chequing-amount"></div>
+              </div>
+              <div id="chequing-collaspe" className="transaction-collaspe"></div>
+              <div id="savings" className="account-box account-hoverable">
+                <div>Savings:</div>
+                <div id="savings-amount"></div>
+              </div>
+              <div id="balance" className="account-box">
+                <div>Balance:</div>
+                <div id="balance-amount"></div>
+              </div>
+            </div>
+            <div id="credit">
+              <div id="credit-card" className="account-box account-hoverable">
+                <div>Credit:</div>
+                <div id="credit-amount"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     )
   }
 }
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+class Toolbar extends React.Component{
+  constructor(props){
+    super(props);
+  }
+
+  render(){
+    return(
+      <div id="toolbar" className="vertical-menu">
+        <a href="#"><img src="https://td-davinci.com/assets/images/td-logo.png" height="44px" width="49px"/></a>
+        <a href="#">Chequing</a>
+        <a href="#">Savings</a>
+        <a href="#">Credit</a>
+        <a href="#">Compare Finances</a>
+      </div>
+    )
+  }
+}
+
+
+class Root extends React.Component{
+  constructor(props){
+    super(props);
+  }
+
+
+  render(){
+
+    return(
+      <div id="root" className="container-fluid">
+        <Toolbar />
+        <Account />
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(<Root />, document.getElementById('app'));
 
 </script>

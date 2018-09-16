@@ -1,0 +1,80 @@
+*{
+  margin: 0;
+  padding: 0;
+
+  font-family: 'WeblySleek UI Semilight';
+}
+
+#root{
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  height: 100%;
+  width:100%;
+}
+
+#toolbar{
+  height: 100%;
+  background-color: rgb(18,66,42);
+}
+
+.vertical-menu {
+    width: 200px;
+}
+
+.vertical-menu a {
+    background-color: rgb(18,66,42);
+    border-right: 5px solid rgb(18,66,42);
+    color: white;
+    display: block;
+    padding: 12px;
+    text-decoration: none;
+}
+
+.vertical-menu a:hover {
+    border-right: 5px solid rgb(26,176,76);
+}
+
+.vertical-menu a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#customer{
+  width:100%;
+  padding: 20px;
+  background-color: white;
+}
+
+#customer-name{
+  font-size: 32px;
+  font-weight: 700;
+}
+
+#customer-id{
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+#accounts{
+  background-color: rgb(244,244,244);
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+
+.account-box{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-left: 5px solid rgb(244,244,244);
+  padding: 10px;
+  border-bottom: 1px solid black;
+}
+
+.account-hoverable:hover{
+  font-weight: 700;
+  background-color: #eef6eb;
+  border-left: 5px solid #1ab04c;
+}
