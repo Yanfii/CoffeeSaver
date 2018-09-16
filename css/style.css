@@ -23,7 +23,7 @@
     width: 200px;
 }
 
-.vertical-menu a {
+.vertical-menu .item {
     background-color: rgb(18,66,42);
     border-right: 5px solid rgb(18,66,42);
     color: white;
@@ -32,11 +32,11 @@
     text-decoration: none;
 }
 
-.vertical-menu a:hover {
+.vertical-menu .item:hover {
     border-right: 5px solid rgb(26,176,76);
 }
 
-.vertical-menu a.active {
+.vertical-menu .item.active {
     background-color: #4CAF50;
     color: white;
 }
@@ -84,4 +84,13 @@
 .transaction-collaspe{
   overflow-y:scroll;
   max-height: 240px;
+}
+
+#devMode{
+  color: white;
+}
+
+#devMode input {
+  width: 80%;
+  justify-content: center;
 }

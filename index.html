@@ -17,6 +17,8 @@
 
 <script type="text/babel">
 
+var accountId = '0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c'
+
 var myInit = {
   method: 'GET',
   headers: {
@@ -24,7 +26,7 @@ var myInit = {
   }
 };
 
-var myAccount = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c/accounts', myInit);
+var myAccount = new Request('https://api.td-davinci.com/api/customers/' + accountId + '/accounts', myInit);
 
 fetch(myAccount)
   .then(response => response.json())
@@ -45,7 +47,7 @@ fetch(myAccount)
 
 });
 
-var myPI = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c',myInit);
+var myPI = new Request('https://api.td-davinci.com/api/customers/' + accountId,myInit);
 
 fetch(myPI)
   .then(response => response.json())
@@ -58,7 +60,7 @@ fetch(myPI)
     document.getElementById("customer-id").innerHTML ="Account ID: " + customerID;
 });
 
-var myTransactions = new Request('https://api.td-davinci.com/api/customers/0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c/transactions', myInit);
+var myTransactions = new Request('https://api.td-davinci.com/api/customers/'+accountId+'/transactions', myInit);
 
 fetch(myTransactions)
   .then(response => response.json())
@@ -153,14 +155,99 @@ class Toolbar extends React.Component{
     super(props);
   }
 
+  handleChange(event) {
+    accountId = event.target.value
+  }
+
+  handleSubmit() {
+    var myAccount = new Request('https://api.td-davinci.com/api/customers/' + accountId + '/accounts', myInit);
+
+    fetch(myAccount)
+      .then(response => response.json())
+      .then(account => {
+        // Chequing
+        var chequing = account["result"]["bankAccounts"][0]["balance"];
+        // Savings
+        var savings = account["result"]["bankAccounts"][1]["balance"];
+        // Credit
+        var credit = account["result"]["creditCardAccounts"][0]["balance"];
+        // Balance
+        var balance = chequing + savings;
+        // the json variable contains the response from the API
+        document.getElementById("chequing-amount").innerHTML ="$" + chequing;
+        document.getElementById("savings-amount").innerHTML ="$" + savings;
+        document.getElementById("balance-amount").innerHTML ="$" + balance;
+        document.getElementById("credit-amount").innerHTML ="$" + credit;
+
+    });
+
+    var myPI = new Request('https://api.td-davinci.com/api/customers/' +accountId,myInit);
+
+    fetch(myPI)
+      .then(response => response.json())
+      .then(account => {
+        // Name
+        var name = account["result"]["givenName"] + " " + account["result"]["surname"];
+        // customer ID
+        var customerID = account["result"]["id"];
+        document.getElementById("customer-name").innerHTML = name;
+        document.getElementById("customer-id").innerHTML ="Account ID: " + customerID;
+    });
+
+    var myTransactions = new Request('https://api.td-davinci.com/api/customers/'+accountId+'/transactions', myInit);
+
+    fetch(myTransactions)
+      .then(response => response.json())
+      .then(account => {
+        var credit = [];
+        var chequing = [];
+
+        account["result"].map(function(transaction){
+        //  console.log(transaction["description"] + " " + transaction["currencyAmount"])
+          if (transaction["type"] == "CreditCardTransaction"){
+            credit.push({"description":transaction["description"], "amount":transaction["currencyAmount"]});
+          } else if (transaction["type"] == "DepositAccountTransaction"){
+            chequing.push({"description":transaction["description"], "amount":transaction["currencyAmount"]});
+          }
+        })
+
+        var creditCollaspe = credit.map(function(transaction){
+          return (
+            `<div style="display:flex;flex-direction:row;justify-content:space-between;padding:0px 20px;" className="transaction-box">
+              <div className="description">${transaction["description"]}</div>
+              <div className="amount">$${transaction["amount"]}</div>
+            </div>`
+          )
+        })
+
+        var chequingCollaspe = credit.map(function(transaction){
+          return (
+            `<div style="display:flex;flex-direction:row;justify-content:space-between;padding:0px 20px;" className="transaction-box">
+              <div className="description">${transaction["description"]}</div>
+              <div className="amount">$${transaction["amount"]}</div>
+            </div>`
+          )
+        })
+
+        document.getElementById("chequing-collaspe").innerHTML = chequingCollaspe.join("");
+        document.getElementById("credit-collaspe").innerHTML = creditCollaspe.join("");
+      });
+
+  }
+
   render(){
     return(
       <div id="toolbar" className="vertical-menu">
-        <a href="#"><img src="https://td-davinci.com/assets/images/td-logo.png" height="44px" width="49px"/></a>
-        <a href="#">Chequing</a>
-        <a href="#">Savings</a>
-        <a href="#">Credit</a>
-        <a href="#">Compare Finances</a>
+        <a className="item" href="#"><img src="https://td-davinci.com/assets/images/td-logo.png" height="44px" width="49px"/></a>
+        <a className="item" href="#">Chequing</a>
+        <a className="item" href="#">Savings</a>
+        <a className="item" href="#">Credit</a>
+        <a className="item" href="#">Compare Finances</a>
+        <div id="devMode" className="item" >
+          <div>Developer Search Box</div>
+          <input placeHolder="Customer ID" onChange={this.handleChange}/>
+          <button className="btn" onClick={this.handleSubmit}>Search</button>
+        </div>
       </div>
     )
   }
