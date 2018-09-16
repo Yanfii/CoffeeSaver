@@ -1,0 +1,67 @@
+<script>
+var accountId = '0c23ac69-08dd-4310-8cd1-8b10746c2acb_c18dca28-f10f-4a0a-b905-db636046bd4c'
+
+var myInit = {
+  method: 'GET',
+  headers: {
+    'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDQlAiLCJ0ZWFtX2lkIjoiZjI0NzBhNTMtOGI5Ni0zYjllLTg5NmItM2Y1Y2YxMmZkMzMxIiwiZXhwIjo5MjIzMzcyMDM2ODU0Nzc1LCJhcHBfaWQiOiIwYzIzYWM2OS0wOGRkLTQzMTAtOGNkMS04YjEwNzQ2YzJhY2IifQ.UCfyelzpPiRB-kk0l8FYNDowfDOJ5RHGkZ8h849hH5k'
+  }
+};
+
+var myAccount = new Request('https://api.td-davinci.com/api/customers/' + accountId + '/transactions', myInit);
+
+fetch(myAccount)
+  .then(response => response.json())
+  .then(account => {
+    var hashTable = {}
+    var sum = 0;
+    account["result"].map(function(res){
+      var isValid = false;
+      if(res["originationDateTime"].substring(5,7) == "09"){
+        var date = res["originationDateTime"].substring(8,10);
+        if(date > 8 || date < 16){
+          isValid = true;
+        }
+      }
+      if (isValid){
+        var merchant = res["merchantCategoryCode"];
+        var money =  res["currencyAmount"];
+        if (merchant == 4899){
+          merchant = "Cable/Tv"
+        } else if(merchant == 5251){
+          merchant = "Hardware"
+        } else if(merchant == 5411){
+          merchant = "Supermarket"
+        } else if(merchant == 5541){
+          merchant = "AutoService"
+        } else if(merchant == 5814){
+          merchant = "FastFood"
+        } else if(merchant == 5921){
+          merchant = "Alcohol"
+        } else if(merchant == 7832){
+          merchant = "Movie"
+        } else if(merchant == 5945){
+          merchant = "Hobby"
+        } else if(merchant == 5912){
+          merchant = "DrugStore"
+        } else {
+          merchant = "failed"
+          money = 0;
+        }
+        sum += money;
+        if (hashTable.hasOwnProperty(merchant)){
+          hashTable[merchant] += money;
+        } else {
+          hashTable[merchant] = money;
+        }
+      }
+    })
+      for (var prop in hashTable){
+        prop = parseInt(prop).toFixed(2);
+      }
+      delete hashTable["failed"]
+      hashTable["Total"] = sum.toFixed(2);
+
+    console.log(hashTable)
+  });
+</script>
